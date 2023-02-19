@@ -2509,3 +2509,25 @@
 {"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:26:53.009Z"}
 {"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:26:53.117Z"}
 {"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:26:53.307Z"}
+{"level":"info","message":"Listening on port 3000...","timestamp":"2023-02-19T02:39:12.108Z"}
+{"level":"info","message":"Connected to mongodb://127.0.0.1:27017/OneClickPix...","timestamp":"2023-02-19T02:39:12.166Z"}
+{"level":"info","message":"Listening on port 3000...","timestamp":"2023-02-19T02:46:46.859Z"}
+{"level":"info","message":"Connected to mongodb://127.0.0.1:27017/OneClickPix...","timestamp":"2023-02-19T02:46:46.914Z"}
+{"level":"info","message":"Listening on port 3000...","timestamp":"2023-02-19T02:48:21.630Z"}
+{"level":"info","message":"Connected to mongodb://127.0.0.1:27017/OneClickPix...","timestamp":"2023-02-19T02:48:21.680Z"}
+{"level":"info","message":"New order received: {\n  customer: {\n    name: 'Eric Burrell',\n    email: 'genericpancakex@gmail.com',\n    phone: '2197651327',\n    shippingAddress: {\n      shippingName: 'Eric Burrell',\n      phone: '2197651327',\n      addressLine1: '900 Greenview Drive',\n      city: 'Crown Point',\n      state: 'IN',\n      country: 'USA',\n      zipCode: '46307',\n      _id: new ObjectId(\"63e6bf2056b670aaa37acd83\")\n    },\n    _id: new ObjectId(\"63f18df94850e32b4fb4ea58\")\n  },\n  items: [\n    {\n      product: [Object],\n      quantity: 1,\n      productSize: [Object],\n      imageName: 'OneClickPixLogo-1676774905053.jpeg',\n      _id: new ObjectId(\"63f18df94850e32b4fb4ea5a\")\n    },\n    {\n      product: [Object],\n      quantity: 2,\n      productSize: [Object],\n      imageName: 'IMG_3130-1676774905053.JPG',\n      _id: new ObjectId(\"63f18df94850e32b4fb4ea5f\")\n    }\n  ],\n  _id: new ObjectId(\"63f18df94850e32b4fb4ea57\"),\n  orderDate: '2/18/2023, 8:48:25 PM',\n  __v: 0\n}","timestamp":"2023-02-19T02:48:25.211Z"}
+{"level":"info","message":"Listening on port 3000...","timestamp":"2023-02-19T02:48:43.805Z"}
+{"level":"info","message":"Connected to mongodb://127.0.0.1:27017/OneClickPix_tests...","timestamp":"2023-02-19T02:48:43.864Z"}
+{"level":"info","message":"Listening on port 3000...","timestamp":"2023-02-19T02:48:45.653Z"}
+{"level":"info","message":"Connected to mongodb://127.0.0.1:27017/OneClickPix_tests...","timestamp":"2023-02-19T02:48:45.713Z"}
+{"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:48:45.874Z"}
+{"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:48:46.013Z"}
+{"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:48:46.140Z"}
+{"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:48:46.341Z"}
+{"level":"info","message":"Listening on port 3000...","timestamp":"2023-02-19T02:48:47.449Z"}
+{"level":"info","message":"Connected to mongodb://127.0.0.1:27017/OneClickPix_tests...","timestamp":"2023-02-19T02:48:47.499Z"}
+{"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:48:47.816Z"}
+{"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:48:47.924Z"}
+{"level":"info","message":"New user saved to database:  username@example.com","timestamp":"2023-02-19T02:48:48.059Z"}
+{"level":"info","message":"Listening on port 3000...","timestamp":"2023-02-19T02:48:49.150Z"}
+{"level":"info","message":"Connected to mongodb://127.0.0.1:27017/OneClickPix_tests...","timestamp":"2023-02-19T02:48:49.203Z"}
