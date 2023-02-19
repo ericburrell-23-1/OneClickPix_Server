@@ -3,5 +3,5 @@ planning/
 coverage/
 images/orders/
 images/products/
-logfile
-uncaughtExceptions
+logfile.log
+uncaughtExceptions.log
