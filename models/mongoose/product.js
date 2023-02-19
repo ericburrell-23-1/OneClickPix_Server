@@ -27,6 +27,7 @@ const productSchema = mongoose.Schema({
       //required: true,
     },
   ],
+  imageName: String,
 });
 
 const Product = mongoose.model("Product", productSchema);

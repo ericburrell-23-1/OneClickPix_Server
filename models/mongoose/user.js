@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const config = require("config");
+const shippingSchema = require("./shippingAddress").schema;
 
 const userSchema = mongoose.Schema({
   firstName: {
@@ -28,6 +29,11 @@ const userSchema = mongoose.Schema({
     minlength: 7,
     maxlength: 1024,
   },
+  addresses: [
+    {
+      type: shippingSchema,
+    },
+  ],
   isAdmin: {
     type: Boolean,
     default: false,

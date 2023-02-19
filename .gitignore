@@ -1,3 +1,7 @@
 node_modules/
 planning/
 coverage/
+images/orders/
+images/products/
+logfile
+uncaughtExceptions

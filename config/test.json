@@ -1,4 +1,5 @@
 {
   "database": "mongodb://127.0.0.1:27017/OneClickPix_tests",
-  "jwtPrivateKey": "1234"
+  "jwtPrivateKey": "1234",
+  "networkIP": "127.0.0.1"
 }

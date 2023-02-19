@@ -7,20 +7,41 @@ const ProductSize = require("../../models/mongoose/productSize").Model;
 const productJoiSchema = require("../../models/joi/product");
 const validate = require("../../middleware/validation");
 const validateObjectId = require("../../middleware/validateObjectId");
-const findReferences = require("../../middleware/findReferences");
+const findReferences = require("../../middleware/findReferences").findMany;
 const auth = require("../../middleware/auth");
 const admin = require("../../middleware/admin");
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./images/products");
+  },
+  filename: (req, file, cb) => {
+    console.log(file);
+    const imageName =
+      path.parse(file.originalname).name +
+      "-" +
+      Date.now() +
+      path.extname(file.originalname);
+    req.header["x-image-name"] = imageName;
+    cb(null, imageName);
+  },
+});
+const upload = multer({ storage: storage });
 
 router.post(
   "/",
   [
     auth,
     admin,
+    upload.single("image"),
     validate(productJoiSchema),
     findReferences([ProductGroup, ProductSize]),
   ],
   async (req, res) => {
     // debug("Middleware completed, saving new product now...");
+    req.body.imageName = req.header["x-image-name"];
     const product = new Product(req.body);
     // debug("Product saved to db");
     const result = await product.save();

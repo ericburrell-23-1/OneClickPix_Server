@@ -1,6 +1,6 @@
-module.exports = (schema) => {
+module.exports = (schema, obj) => {
   return (req, res, next) => {
-    const validResult = schema.validate(req.body);
+    const validResult = schema.validate(obj || req.body);
     if (validResult.error)
       return res
         .status(400)
