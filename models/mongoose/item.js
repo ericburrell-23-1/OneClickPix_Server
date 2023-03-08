@@ -2,16 +2,10 @@ const mongoose = require("mongoose");
 const productSchema = require("./product").schema;
 const productSizeSchema = require("./productSize").schema;
 
-const itemSchema = mongoose.Schema({
+const orderItemSchema = mongoose.Schema({
   product: {
     type: productSchema,
     required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 99,
   },
   productSize: {
     type: productSizeSchema,
@@ -21,6 +15,34 @@ const itemSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 99,
+  },
 });
 
-module.exports.schema = itemSchema;
+const cartItemSchema = mongoose.Schema({
+  product: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+  },
+  productSize: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+  },
+  imageName: {
+    type: String,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 99,
+  },
+});
+
+module.exports.orderItemSchema = orderItemSchema;
+module.exports.cartItemSchema = cartItemSchema;

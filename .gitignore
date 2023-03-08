@@ -3,5 +3,6 @@ planning/
 coverage/
 images/orders/
 images/products/
+images/marketing/
 logfile.log
 uncaughtExceptions.log

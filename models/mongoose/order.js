@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const customerSchema = require("./customer").schema;
-const itemSchema = require("./item").schema;
+const orderItemSchema = require("./item").orderItemSchema;
 // const shippingSchema = require("./shippingAddress").schema;
 
 const orderSchema = mongoose.Schema({
@@ -14,7 +14,7 @@ const orderSchema = mongoose.Schema({
   // },
   items: [
     {
-      type: itemSchema,
+      type: orderItemSchema,
       required: true,
     },
   ],

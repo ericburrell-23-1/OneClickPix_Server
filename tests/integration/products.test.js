@@ -162,6 +162,7 @@ describe("/api/offerings/products", () => {
       const group1 = {
         name: "Group1",
         description: "Group description",
+        image: "image_name",
         _id: new mongoose.Types.ObjectId(),
       };
       await ProductGroup.collection.insertOne(group1);

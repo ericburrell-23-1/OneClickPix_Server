@@ -4,7 +4,7 @@ itemJoiSchema = Joi.object({
   product: Joi.objectId().required(),
   productSize: Joi.objectId().required(),
   imageName: Joi.string().required(),
-  quantity: Joi.number().min(1).max(99),
+  quantity: Joi.number().min(1).max(99).required(),
   finishingOptions: Joi.objectId(),
 });
 

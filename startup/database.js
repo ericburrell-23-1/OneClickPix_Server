@@ -12,4 +12,6 @@ module.exports = function () {
       useUnifiedTopology: true,
     })
     .then(() => winston.info(`Connected to ${db}...`));
+
+  return mongoose.connection.getClient();
 };

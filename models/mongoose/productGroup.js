@@ -13,6 +13,12 @@ const productGroupSchema = mongoose.Schema({
     minLength: 5,
     maxLength: 1024,
   },
+  image: {
+    type: String,
+    required: true,
+    minLength: 2,
+    maxLength: 1024,
+  },
 });
 
 const ProductGroup = mongoose.model("ProductGroup", productGroupSchema);
