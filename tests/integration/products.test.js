@@ -76,7 +76,11 @@ describe("/api/offerings/products", () => {
 
     beforeEach(() => {
       token = new User({ isAdmin: true }).generateAuthToken();
-      payload = { name: "product1", description: "description 1" };
+      payload = {
+        name: "product1",
+        description: "description 1",
+        //imageName: "imageName.png",
+      };
     });
 
     it("should return 400 if the name is less than 2 characters", async () => {
@@ -162,11 +166,12 @@ describe("/api/offerings/products", () => {
       const group1 = {
         name: "Group1",
         description: "Group description",
-        image: "image_name",
+        imageName: "image_name",
         _id: new mongoose.Types.ObjectId(),
       };
       await ProductGroup.collection.insertOne(group1);
       payload.productGroups = [group1._id];
+      //payload.imageName = "imageName.png";
       group1._id = group1._id.toHexString();
 
       const res = await exec();
@@ -174,6 +179,7 @@ describe("/api/offerings/products", () => {
       expect(res.body).toHaveProperty("_id");
       expect(res.body).toHaveProperty("name", "product1");
       expect(res.body).toHaveProperty("description", "description 1");
+      //expect(res.body).toHaveProperty("imageName", "imageName.png");
       expect(res.body).toHaveProperty("productSizes");
       expect(res.body.productGroups).toMatchObject([group1]);
     });
@@ -198,11 +204,13 @@ describe("/api/offerings/products", () => {
       payload = {
         name: "product1",
         description: "description 1",
+        //imageName: "imageName.png",
         _id: _id,
       };
       updatePayload = {
         name: "newProductName",
         description: payload.description,
+        //imageName: payload.imageName,
       };
       await Product.collection.insertOne(payload);
     });

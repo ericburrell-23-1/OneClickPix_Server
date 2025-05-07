@@ -3,14 +3,20 @@ const express = require("express");
 const router = express.Router();
 const ProductSize = require("../../models/mongoose/productSize").Model;
 const productSizeJoiSchema = require("../../models/joi/productSize");
+const auth = require("../../middleware/auth");
+const admin = require("../../middleware/admin");
 const validate = require("../../middleware/validation");
 const validateObjectId = require("../../middleware/validateObjectId");
 
-router.post("/", validate(productSizeJoiSchema), async (req, res) => {
-  const productSize = new ProductSize(req.body);
-  const result = await productSize.save();
-  res.send(result);
-});
+router.post(
+  "/",
+  [auth, admin, validate(productSizeJoiSchema)],
+  async (req, res) => {
+    const productSize = new ProductSize(req.body);
+    const result = await productSize.save();
+    res.send(result);
+  }
+);
 
 // Get all productSizes
 router.get("/", async (req, res) => {

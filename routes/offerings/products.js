@@ -15,7 +15,7 @@ const path = require("path");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./images/products");
+    cb(null, "./images/marketing/products");
   },
   filename: (req, file, cb) => {
     console.log(file);
@@ -42,6 +42,7 @@ router.post(
   async (req, res) => {
     // debug("Middleware completed, saving new product now...");
     req.body.imageName = req.header["x-image-name"];
+    debug(req.body.imageName);
     const product = new Product(req.body);
     // debug("Product saved to db");
     const result = await product.save();

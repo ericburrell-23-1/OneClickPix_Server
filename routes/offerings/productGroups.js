@@ -7,11 +7,31 @@ const validate = require("../../middleware/validation");
 const validateObjectId = require("../../middleware/validateObjectId");
 const auth = require("../../middleware/auth");
 const admin = require("../../middleware/admin");
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./images/marketing/productGroups");
+  },
+  filename: (req, file, cb) => {
+    console.log(file);
+    const imageName =
+      path.parse(file.originalname).name +
+      "-" +
+      Date.now() +
+      path.extname(file.originalname);
+    req.header["x-image-name"] = imageName;
+    cb(null, imageName);
+  },
+});
+const upload = multer({ storage: storage });
 
 router.post(
   "/",
-  [auth, admin, validate(productGroupJoiSchema)],
+  [auth, admin, upload.single("image"), validate(productGroupJoiSchema)],
   async (req, res) => {
+    req.body.imageName = req.header["x-image-name"];
     const productGroup = new ProductGroup(req.body);
     const result = await productGroup.save();
     res.send(result);

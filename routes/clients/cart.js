@@ -6,6 +6,8 @@ const Cart = require("../../models/mongoose/cart").Model;
 const _ = require("lodash");
 
 router.put("/add-to-cart", validate(itemJoiSchema), async (req, res) => {
+  console.log(req.body);
+  req.session.cookie.expires = NewExpirationDate();
   if (!req.session.cart) {
     req.session.cart = new Cart();
     req.session.cart.items[0] = req.body;
@@ -20,13 +22,13 @@ router.put("/add-to-cart", validate(itemJoiSchema), async (req, res) => {
         _.pick(item, [
           "product",
           "productSize",
-          "imageName",
+          "imageURL",
           "finishingOptions",
         ]),
         _.pick(req.body, [
           "product",
           "productSize",
-          "imageName",
+          "imageURL",
           "finishingOptions",
         ])
       )
@@ -44,6 +46,7 @@ router.put("/add-to-cart", validate(itemJoiSchema), async (req, res) => {
 });
 
 router.put("/remove-from-cart", validate(itemJoiSchema), (req, res) => {
+  req.session.cookie.expires = NewExpirationDate();
   if (!req.session.cart) {
     return res.status(404).send("No cart found for this session.");
   }
@@ -54,13 +57,13 @@ router.put("/remove-from-cart", validate(itemJoiSchema), (req, res) => {
         _.pick(item, [
           "product",
           "productSize",
-          "imageName",
+          "imageURL",
           "finishingOptions",
         ]),
         _.pick(req.body, [
           "product",
           "productSize",
-          "imageName",
+          "imageURL",
           "finishingOptions",
         ])
       )
@@ -89,6 +92,7 @@ router.delete("/clear-cart", (req, res) => {
 });
 
 router.get("/", (req, res) => {
+  req.session.cookie.expires = NewExpirationDate();
   if (!req.session.cart) {
     req.session.cart = new Cart();
     return res.set("x-cart-message", "Cart is empty.").send(req.session.cart);
@@ -97,3 +101,7 @@ router.get("/", (req, res) => {
 });
 
 module.exports = router;
+
+function NewExpirationDate() {
+  return new Date(new Date().getTime() + 13 * 24 * 60 * 60 * 1000);
+}

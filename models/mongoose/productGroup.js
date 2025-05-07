@@ -13,7 +13,7 @@ const productGroupSchema = mongoose.Schema({
     minLength: 5,
     maxLength: 1024,
   },
-  image: {
+  imageName: {
     type: String,
     required: true,
     minLength: 2,

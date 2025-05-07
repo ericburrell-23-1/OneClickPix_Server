@@ -1,30 +1,25 @@
 const mongoose = require("mongoose");
-const customerSchema = require("./customer").schema;
 const orderItemSchema = require("./item").orderItemSchema;
-// const shippingSchema = require("./shippingAddress").schema;
+const shippingSchema = require("./shippingAddress").schema;
 
 const orderSchema = mongoose.Schema({
   customer: {
-    type: customerSchema,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Customer",
     required: true,
   },
-  // shippingAddress: {
-  //   type: shippingSchema,
-  //   required: true,
-  // },
-  items: [
-    {
-      type: orderItemSchema,
-      required: true,
-    },
-  ],
+  shippingAddress: {
+    type: shippingSchema,
+    required: true,
+  },
+  items: {
+    type: [orderItemSchema],
+    required: true,
+    validate: [(arr) => arr.length > 0, "Order must contain at least one item"],
+  },
   orderDate: {
-    type: String,
-    default: () => {
-      return new Date().toLocaleString("en-US", {
-        timeZone: "America/Chicago",
-      });
-    },
+    type: Date,
+    default: () => new Date(),
   },
 });
 
