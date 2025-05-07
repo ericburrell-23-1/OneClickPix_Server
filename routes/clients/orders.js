@@ -5,7 +5,7 @@ const router = express.Router();
 const Order = require("../../models/mongoose/order").Model;
 const Product = require("../../models/mongoose/product").Model;
 const User = require("../../models/mongoose/user").Model;
-const ProductSize = require("../../models/mongoose/productSize").Model;
+// const ProductSize = require("../../models/mongoose/productSize").Model;
 const orderJoiSchema = require("../../models/joi/order");
 const itemJoiSchema = require("../../models/joi/item");
 const validate = require("../../middleware/validation");
@@ -48,7 +48,7 @@ router.post(
     for (const [index, item] of req.body.items.entries()) {
       item.imageName = req.header[`x-image${index}-name`];
       validate(itemJoiSchema, item)(req, res, () => {});
-      await findReference([Product, ProductSize], item)(req, res, () => {});
+      await findReference([Product], item)(req, res, () => {});
     }
 
     const order = new Order(req.body);

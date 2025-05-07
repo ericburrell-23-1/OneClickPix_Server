@@ -3,7 +3,6 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../../models/mongoose/product").Model;
 const ProductGroup = require("../../models/mongoose/productGroup").Model;
-const ProductSize = require("../../models/mongoose/productSize").Model;
 const productJoiSchema = require("../../models/joi/product");
 const validate = require("../../middleware/validation");
 const validateObjectId = require("../../middleware/validateObjectId");
@@ -37,16 +36,27 @@ router.post(
     admin,
     upload.single("image"),
     validate(productJoiSchema),
-    findReferences([ProductGroup, ProductSize]),
+    // findReferences([ProductGroup, ProductSize]),
   ],
   async (req, res) => {
     // debug("Middleware completed, saving new product now...");
     req.body.imageName = req.header["x-image-name"];
     debug(req.body.imageName);
-    const product = new Product(req.body);
-    // debug("Product saved to db");
-    const result = await product.save();
-    res.send(result);
+    try {
+      const product = new Product(req.body);
+      // debug("Product saved to db");
+      const result = await product.save();
+      res.status(201).send(result);
+    } catch (err) {
+      if (err.name === "ValidationError") {
+        const errors = {};
+        for (const field in err.errors) {
+          errors[field] = err.errors[field].message;
+        }
+        return res.status(400).send({ errors });
+      }
+      res.status(500).send(err.message);
+    }
   }
 );
 
@@ -72,7 +82,7 @@ router.put(
     auth,
     admin,
     validate(productJoiSchema),
-    findReferences([ProductGroup, ProductSize]),
+    // findReferences([ProductGroup]),
   ],
   async (req, res) => {
     const product = await Product.findByIdAndUpdate(

@@ -2,7 +2,6 @@ const request = require("supertest");
 const Order = require("../../models/mongoose/order").Model;
 const User = require("../../models/mongoose/user").Model;
 const Product = require("../../models/mongoose/product").Model;
-const ProductSize = require("../../models/mongoose/productSize").Model;
 const config = require("config");
 const jwt = require("jsonwebtoken");
 const sample = require("./sampleObjects");
@@ -19,7 +18,7 @@ describe("/api/clients/orders", () => {
     await Order.remove({}); // Clean up database after each run
     await User.remove({});
     await Product.remove({});
-    await ProductSize.remove({});
+    // await ProductSize.remove({});
   });
 
   describe("GET /", () => {
@@ -35,20 +34,17 @@ describe("/api/clients/orders", () => {
       token = new User({ isAdmin: true }).generateAuthToken();
       await User.collection.insertMany([sample.user, sample.user2]);
       await Product.collection.insertOne(sample.product);
-      await ProductSize.collection.insertOne(sample.productSize);
 
       let user = await User.find({ firstName: sample.user.firstName });
       let user2 = await User.find({ firstName: sample.user2.firstName });
       let product = await Product.find({ name: sample.product.name });
       let quantity = 1;
-      let productSize = await ProductSize.find({ x: sample.productSize.x });
       let imageName = "sampleImage.jpg";
       const order1 = {
         user: user,
         shippingAddress: sample.shippingAddress,
         product: product,
         quantity,
-        productSize: productSize,
         imageName,
       };
       const order2 = {
@@ -56,7 +52,6 @@ describe("/api/clients/orders", () => {
         shippingAddress: sample.shippingAddress,
         product: product,
         quantity: 2,
-        productSize: productSize,
         imageName,
       };
 
@@ -84,7 +79,6 @@ describe("/api/clients/orders", () => {
   describe("POST /", () => {
     let userId;
     let productId;
-    let sizeId;
     let user;
     let token;
 
@@ -99,9 +93,7 @@ describe("/api/clients/orders", () => {
     beforeEach(async () => {
       userId = mongoose.Types.ObjectId();
       productId = mongoose.Types.ObjectId();
-      sizeId = mongoose.Types.ObjectId();
       await Product.collection.insertOne({ _id: productId });
-      await ProductSize.collection.insertOne({ _id: sizeId });
       await User.collection.insertOne({
         _id: userId,
         addresses: sample.shippingAddress,
@@ -110,8 +102,9 @@ describe("/api/clients/orders", () => {
       token = user.generateAuthToken();
     });
 
-    it("should save a valid order in the db", () => {
-      let item = { product: productId, productSize: sizeId, quantity: 1 };
+    it("should save a valid order in the db (not complete)", () => {
+      let item = { product: productId, quantity: 1 };
+      console.log("Need to write order POST tests");
     });
   });
 });

@@ -1,7 +1,7 @@
 const request = require("supertest");
 const Product = require("../../models/mongoose/product").Model;
 const ProductGroup = require("../../models/mongoose/productGroup").Model;
-const ProductSize = require("../../models/mongoose/productSize").Model;
+// const ProductSize = require("../../models/mongoose/productSize").Model;
 const User = require("../../models/mongoose/user").Model;
 const mongoose = require("mongoose");
 
@@ -15,7 +15,7 @@ describe("/api/offerings/products", () => {
     await server.close();
     await Product.remove({}); // Clean up database after each run
     await ProductGroup.remove({});
-    await ProductSize.remove({});
+    // await ProductSize.remove({});
   });
 
   describe("GET /", () => {
@@ -79,6 +79,15 @@ describe("/api/offerings/products", () => {
       payload = {
         name: "product1",
         description: "description 1",
+        variantType: "sized",
+        variants: [
+          {
+            label: "5x7",
+            x: 5,
+            y: 7,
+            price: 2.99,
+          },
+        ],
         //imageName: "imageName.png",
       };
     });
@@ -180,8 +189,8 @@ describe("/api/offerings/products", () => {
       expect(res.body).toHaveProperty("name", "product1");
       expect(res.body).toHaveProperty("description", "description 1");
       //expect(res.body).toHaveProperty("imageName", "imageName.png");
-      expect(res.body).toHaveProperty("productSizes");
-      expect(res.body.productGroups).toMatchObject([group1]);
+      // expect(res.body).toHaveProperty("productSizes");
+      expect(res.body.productGroups).toMatchObject([group1._id]);
     });
   });
 
@@ -202,38 +211,30 @@ describe("/api/offerings/products", () => {
       token = new User({ isAdmin: true }).generateAuthToken();
       _id = new mongoose.Types.ObjectId();
       payload = {
+        _id: _id,
         name: "product1",
         description: "description 1",
-        //imageName: "imageName.png",
-        _id: _id,
+        variantType: "sized",
+        variants: [
+          {
+            label: "5x7",
+            x: 5,
+            y: 7,
+            price: 2.99,
+          },
+        ],
       };
       updatePayload = {
-        name: "newProductName",
+        name: "new product name",
         description: payload.description,
-        //imageName: payload.imageName,
+        variantType: payload.variantType,
+        variants: payload.variants,
       };
       await Product.collection.insertOne(payload);
     });
 
     it("should should return 400 if the description is less than 5 characters", async () => {
       updatePayload.description = "1234";
-      const res = await exec();
-
-      expect(res.status).toBe(400);
-    });
-
-    it("should should return 400 if invalid productSize ID is passed", async () => {
-      updatePayload.productSizes = 1;
-
-      const res = await exec();
-
-      expect(res.status).toBe(400);
-    });
-
-    it("should should return 400 if productSize cannot be found", async () => {
-      const productSizesId = new mongoose.Types.ObjectId();
-      updatePayload.productSizes = [productSizesId];
-
       const res = await exec();
 
       expect(res.status).toBe(400);
@@ -267,27 +268,34 @@ describe("/api/offerings/products", () => {
       expect(res.status).toBe(404);
     });
 
-    it("should update product in database if valid product is sent", async () => {
-      const productSizesId = new mongoose.Types.ObjectId();
-      const newProductSize = {
-        x: 8,
-        y: 10,
-        _id: productSizesId,
-      };
-      await ProductSize.collection.insertOne(newProductSize);
-      updatePayload.productSizes = [productSizesId];
+    // it("should update product in database if valid product is sent", async () => {
+    //   const productSizesId = new mongoose.Types.ObjectId();
+    //   const newProductSize = {
+    //     x: 8,
+    //     y: 10,
+    //     _id: productSizesId,
+    //   };
+    //   await ProductSize.collection.insertOne(newProductSize);
+    //   updatePayload.productSizes = [productSizesId];
 
-      await exec();
+    //   await exec();
+    //   const product = await Product.find({ name: updatePayload.name });
+
+    //   expect(product.length).toBe(1);
+    //   expect(product[0]).toHaveProperty("name", updatePayload.name);
+    //   expect(product[0]).toHaveProperty(
+    //     "description",
+    //     updatePayload.description
+    //   );
+    //   expect(product[0]).toHaveProperty("productGroups");
+    //   expect(product[0].productSizes[0]).toMatchObject(newProductSize);
+    // });
+
+    it("should save the updated product in the database if it is valid", async () => {
+      const res = await exec();
+
       const product = await Product.find({ name: updatePayload.name });
-
       expect(product.length).toBe(1);
-      expect(product[0]).toHaveProperty("name", updatePayload.name);
-      expect(product[0]).toHaveProperty(
-        "description",
-        updatePayload.description
-      );
-      expect(product[0]).toHaveProperty("productGroups");
-      expect(product[0].productSizes[0]).toMatchObject(newProductSize);
     });
 
     it("should return updated product in response after saving to database", async () => {

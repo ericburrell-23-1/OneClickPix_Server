@@ -55,8 +55,18 @@ const productSchema = mongoose.Schema({
   },
   productGroups: [
     {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "ProductGroup",
+      validate: {
+        validator: async function (value) {
+          const exists = await mongoose
+            .model("ProductGroup")
+            .exists({ _id: value });
+          return exists !== null;
+        },
+        message: (props) =>
+          `ProductGroup with ID ${props.value} does not exist.`,
+      },
     },
   ],
   variantType: {
@@ -90,6 +100,26 @@ productSchema.pre("validate", function (next) {
   if (labels.length !== uniqueLabels.size) {
     return next(new Error("Variant labels must be unique within a product."));
   }
+
+  if (this.variantType === "sized+3d") {
+    for (const v of this.variants) {
+      if (typeof v.z !== "number" || v.z <= 0) {
+        return next(
+          new Error(
+            `All variants must have a positive 'z' value when variantType is "sized+3d". Problem with variant "${v.label}".`
+          )
+        );
+      }
+      if (typeof v.weight !== "number" || v.weight <= 0) {
+        return next(
+          new Error(
+            `All variants must have a positive 'weight' value when variantType is "sized+3d". Problem with variant "${v.label}".`
+          )
+        );
+      }
+    }
+  }
+
   next();
 });
 
