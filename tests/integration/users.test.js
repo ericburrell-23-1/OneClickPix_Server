@@ -47,6 +47,7 @@ describe("/api/clients/users", () => {
         .get("/api/clients/users/me")
         .set("x-auth-token", token);
 
+      expect(res.status).toBe(200);
       expect(res.body._id).toEqual(user._id.toHexString());
       expect(res.body.firstName).toEqual(user.firstName);
       expect(res.body.lastName).toEqual(user.lastName);

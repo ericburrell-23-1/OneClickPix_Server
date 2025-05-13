@@ -10,14 +10,16 @@ const winston = require("winston");
 
 router.get("/me", auth, async (req, res) => {
   const user = await User.findById(req.user._id);
-  if (!user) res.status(404).send("User with the given ID not found");
+  if (!user) return res.status(404).send("User with the given ID not found");
   res.send(_.omit(user.toObject(), ["password", "__v"]));
 });
 
 router.post("/", validate(userJoiSchema), async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user)
-    res.status(400).send("User with this email address already registered.");
+    return res
+      .status(400)
+      .send("User with this email address already registered.");
 
   // Hashing password
   const salt = await bcrypt.genSalt(10);

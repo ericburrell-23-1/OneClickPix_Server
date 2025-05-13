@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const orderItemSchema = require("./item").orderItemSchema;
-const shippingSchema = require("./shippingAddress").schema;
+const shippingAddressSchema = require("./shippingAddress").schema;
 
 const orderSchema = mongoose.Schema({
   customer: {
@@ -8,8 +8,13 @@ const orderSchema = mongoose.Schema({
     ref: "Customer",
     required: true,
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   shippingAddress: {
-    type: shippingSchema,
+    type: shippingAddressSchema,
     required: true,
   },
   items: {

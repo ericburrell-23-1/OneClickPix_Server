@@ -44,7 +44,6 @@ const productSnapshotSchema = new mongoose.Schema({
   weight: {
     type: Number,
     min: 0,
-    required: true,
   },
 });
 

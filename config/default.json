@@ -1,5 +1,6 @@
 {
   "database": "mongodb://127.0.0.1:27017/OneClickPix",
   "jwtPrivateKey": "OneClickPix_jwtPrivateKey",
-  "networkIP": "172.16.0.112"
+  "networkIP": "172.16.0.112",
+  "uploadsDir": "./images/orders"
 }

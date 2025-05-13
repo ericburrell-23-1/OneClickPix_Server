@@ -20,6 +20,10 @@ app.use(
   })
 );
 require("./startup/routes")(app);
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err.stack || err);
+  res.status(500).send("Internal server error.");
+});
 
 app.get("/", (req, res) => {
   res.send("Welcome to One Click Pix App :)");
