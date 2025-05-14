@@ -1,4 +1,5 @@
 const debug = require("debug")("app:dev");
+const winston = require("winston");
 const express = require("express");
 const router = express.Router();
 const Product = require("../../models/mongoose/product").Model;
@@ -31,13 +32,7 @@ const upload = multer({ storage: storage });
 
 router.post(
   "/",
-  [
-    auth,
-    admin,
-    upload.single("image"),
-    validate(productJoiSchema),
-    // findReferences([ProductGroup, ProductSize]),
-  ],
+  [auth, admin, upload.single("image"), validate(productJoiSchema)],
   async (req, res) => {
     // debug("Middleware completed, saving new product now...");
     req.body.imageName = req.header["x-image-name"];
@@ -48,12 +43,13 @@ router.post(
       const result = await product.save();
       res.status(200).send(result);
     } catch (err) {
-      if (err.name === "ValidationError") {
+      // winston.error("Caught error:", err);
+      if (err.name === "ValidationError" || err.name === "Error") {
         const errors = {};
         for (const field in err.errors) {
           errors[field] = err.errors[field].message;
         }
-        return res.status(400).send({ errors });
+        return res.status(400).send(err.message);
       }
       res.status(500).send(err.message);
     }

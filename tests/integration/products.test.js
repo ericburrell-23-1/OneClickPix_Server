@@ -147,7 +147,28 @@ describe("/api/offerings/products", () => {
       expect(res.status).toBe(400);
     });
 
-    // It should return 401 if the client is not logged in
+    it("should return 400 if variantType is sized+3d but no weight is provided.", async () => {
+      payload.variantType = "sized+3d";
+      payload.variants[0].z = 1;
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+      expect(res.text).toMatch(
+        /all variants must have a positive 'weight' value/i
+      );
+    });
+
+    it("should return 400 if variantType is sized+3d but no z is provided.", async () => {
+      payload.variantType = "sized+3d";
+      payload.variants[0].weight = 1;
+      const res = await exec();
+
+      // console.log(res.name);
+
+      expect(res.status).toBe(400);
+      expect(res.text).toMatch(/all variants must have a positive 'z' value/i);
+    });
+
     it("should return 401 if the client is not logged in", async () => {
       token = "";
       const res = await exec();
@@ -155,7 +176,6 @@ describe("/api/offerings/products", () => {
       expect(res.status).toBe(401);
     });
 
-    // It should return 403 if the user is not admin
     it("should return 403 if the user is not admin", async () => {
       token = await new User().generateAuthToken();
       const res = await exec();
