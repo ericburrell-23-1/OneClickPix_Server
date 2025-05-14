@@ -19,6 +19,7 @@ const path = require("path");
 const config = require("config");
 const embedShippingAddress = require("../../middleware/embedShippingAddress");
 const authorize = require("../../middleware/authorize");
+const fs = require("fs");
 
 const uploadsDir = config.get("uploadsDir");
 
@@ -28,7 +29,7 @@ const storage = multer.diskStorage({
       if (!uploadsDir) throw new Error("uploadsDir is undefined or empty");
       cb(null, uploadsDir);
     } catch (err) {
-      console.error("Error in multer.destination:", err);
+      winston.error("Error in multer.destination:", err);
       cb(err); // Pass error to multer so it can send 500
     }
   },
@@ -53,19 +54,28 @@ const storage = multer.diskStorage({
 
 const fileFilter = function (req, file, cb) {
   if (file.mimetype !== "image/jpeg") {
-    console.error("Rejected due to wrong MIME type:", file.mimetype);
+    winston.error("Rejected due to wrong MIME type:", file.mimetype);
     return cb(new Error("Wrong file type"));
   }
 
   if (!file.fieldname.match(/^images[0-9]*$/)) {
-    console.error("Rejected due to unexpected field name:", file.fieldname);
+    winston.error("Rejected due to unexpected field name:", file.fieldname);
     return cb(new Error("File field not allowed"));
   }
 
   cb(null, true);
 };
 
-const upload = multer({ storage: storage, fileFilter: fileFilter });
+const limits = {
+  fileSize: 20 * 1024 * 1024,
+  files: 10,
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: limits,
+});
 
 const decodeOrderPayload = (req, res, next) => {
   try {
@@ -81,38 +91,33 @@ router.post(
   "/",
   [
     auth,
-    authorize(/* args */),
     upload.any(),
     decodeOrderPayload,
     validate(orderJoiSchema),
+    authorize(),
     embedShippingAddress,
     addProductSnapshot,
   ],
   async (req, res) => {
     try {
-      // console.log("req.files:", req.files);
-      // console.log("req.headers:", req.headers);
-
-      // console.log("req.body:", req.body);
-
-      // const validationError = orderJoiSchema.validate(req.body);
-      // if (validationError.error) {
-      //   console.log("Joi order schema validation failed");
-      //   return res.status(400).send(validationError.error.details[0].message);
-      // }
-      for (const [index, item] of req.body.items.entries()) {
-        const newImageNames = item.imageNames.map((name) => {
-          const renamed = req.imageNames[name];
+      for (const item of req.body.items) {
+        const newImageNames = [];
+        for (const name of item.imageNames) {
+          const renamed = req.imageNames?.[name];
           if (!renamed) {
-            console.warn(`Referenced image not found for: ${name}`);
+            winston.error(`Referenced image not found for: ${name}`);
+            res.status(400).send(`Referenced image not found for: ${name}`);
+            return;
           }
-          return renamed || name; // fallback if needed
-        });
-        // console.log("Original image names:", item.imageNames);
-        // console.log("New image names:", newImageNames);
+          const filePath = path.join(uploadsDir, renamed);
+          if (!fs.existsSync(filePath)) {
+            winston.error(`Image file missing on disk for: ${renamed}`);
+            res.status(400).send(`Uploaded file not found: ${renamed}`);
+            return;
+          }
+          newImageNames.push(renamed);
+        }
         item.imageNames = newImageNames;
-
-        // await findReference([Product], item)(req, res, () => {});
       }
       const order = new Order(req.body);
       const result = await order.save();
@@ -120,7 +125,7 @@ router.post(
       res.send(result);
     } catch (err) {
       winston.error("Upload error:", err);
-      return res.status(400).send("Invalid JSON payload or malformed request.");
+      return res.status(400).send(err.message);
     }
   }
 );

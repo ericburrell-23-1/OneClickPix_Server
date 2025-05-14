@@ -46,7 +46,7 @@ router.post(
       const product = new Product(req.body);
       // debug("Product saved to db");
       const result = await product.save();
-      res.status(201).send(result);
+      res.status(200).send(result);
     } catch (err) {
       if (err.name === "ValidationError") {
         const errors = {};

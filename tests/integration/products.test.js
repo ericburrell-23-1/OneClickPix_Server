@@ -13,9 +13,8 @@ describe("/api/offerings/products", () => {
   });
   afterEach(async () => {
     await server.close();
-    await Product.remove({}); // Clean up database after each run
-    await ProductGroup.remove({});
-    // await ProductSize.remove({});
+    await Product.deleteMany({});
+    await ProductGroup.deleteMany({});
   });
 
   describe("GET /", () => {

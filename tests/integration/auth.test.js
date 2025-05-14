@@ -11,7 +11,7 @@ describe("/api/clients/users", () => {
   });
   afterEach(async () => {
     await server.close();
-    await User.remove({}); // Clean up database after each run
+    await User.deleteMany({}); // Clean up database after each run
   });
 
   describe("POST /", () => {

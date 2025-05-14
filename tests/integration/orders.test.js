@@ -119,7 +119,6 @@ describe("/api/clients/orders", () => {
       token = user.generateAuthToken();
 
       order = structuredClone(sample.order);
-      order.user = user._id;
       order.customer = customer._id;
       order.shippingAddress = customer.addresses[0]._id;
 
@@ -184,11 +183,25 @@ describe("/api/clients/orders", () => {
       expect(res.status).toBe(400);
     });
 
+    it("should return 400 if a single-image product contains multiple images", async () => {
+      product2.multiPhoto = false;
+      product2.save();
+      const res = await exec(order);
+
+      expect(res.status).toBe(400);
+      expect(res.text).toMatch(
+        /expected exactly one image for single-photo product/i
+      );
+    });
+
     it("should return 400 if a multi-image product does not contain multiple images", async () => {
       order.items[1].imageNames = [order.items[1].imageNames[0]];
       const res = await exec(order);
 
       expect(res.status).toBe(400);
+      expect(res.text).toMatch(
+        /expected multiple images for multi-photo product/i
+      );
     });
 
     it("should return 400 if any image referenced in order.items does not match any uploaded file", async () => {
@@ -197,6 +210,18 @@ describe("/api/clients/orders", () => {
 
       expect(res.status).toBe(400);
       expect(res.text).toMatch(/referenced image not found/i);
+    });
+
+    it("should return 400 if any image was not successfully saved to the disk", async () => {
+      const existsSyncSpy = jest
+        .spyOn(fs, "existsSync")
+        .mockImplementation(() => false);
+      const res = await exec(order);
+
+      // expect(res.status).toBe(400);
+      expect(res.text).toMatch(/uploaded file not found/i);
+
+      existsSyncSpy.mockRestore();
     });
 
     it("should return 400 if any order contains no items", async () => {
@@ -222,9 +247,7 @@ describe("/api/clients/orders", () => {
     });
 
     it("should save a valid order in the db sent by user assigned to customer", async () => {
-      const res = await exec(order);
-
-      console.log("res status:", res.status);
+      await exec(order);
 
       const savedOrder = await Order.findOne({ customer: order.customer });
       expect(savedOrder).not.toBeNull();
@@ -233,11 +256,33 @@ describe("/api/clients/orders", () => {
 
     it("should save a valid order in the db sent by admin", async () => {
       token = new User({ isAdmin: true }).generateAuthToken();
-      const res = await exec(order);
+      await exec(order);
 
       const savedOrder = await Order.findOne({ customer: order.customer });
       expect(savedOrder).not.toBeNull();
       expect(savedOrder.items).toHaveLength(2);
+    });
+
+    it("should return the saved order in the response body", async () => {
+      const res = await exec(order);
+
+      expect(res.status).toBe(200); // or 201 depending on your API design
+      expect(res.body).toHaveProperty("_id");
+      expect(res.body).toHaveProperty("customer", order.customer.toHexString());
+      expect(res.body).toHaveProperty("items");
+      expect(res.body.items).toHaveLength(order.items.length);
+
+      for (let i = 0; i < order.items.length; i++) {
+        const item = res.body.items[i];
+        const inputItem = order.items[i];
+
+        // Validate quantity matches
+        expect(item).toHaveProperty("quantity", inputItem.quantity);
+
+        // Validate product is a snapshot object (not just an ID)
+        expect(item).toHaveProperty("product");
+        expect(typeof item.product).toBe("object");
+      }
     });
   });
 });
